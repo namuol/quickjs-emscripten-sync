@@ -3,12 +3,8 @@
   "author": "rot1024",
   "version": "1.2.0",
   "license": "MIT",
-  "type": "module",
   "source": "./src/index.ts",
   "main": "./dist/quickjs-emscripten-sync.cjs",
-  "module": "./dist/quickjs-emscripten-sync.module.js",
-  "exports": "./dist/quickjs-emscripten-sync.modern.js",
-  "unpkg": "./dist/quickjs-emscripten-sync.umd.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "files": [
@@ -40,11 +36,15 @@
   },
   "size-limit": [
     {
-      "path": "dist/quickjs-emscripten-sync.cjs.js",
+      "path": "dist/quickjs-emscripten-sync.cjs",
       "limit": "10 KB"
     },
     {
-      "path": "dist/quickjs-emscripten-sync.esm.js",
+      "path": "dist/quickjs-emscripten-sync.umd.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/quickjs-emscripten-sync.module.js",
       "limit": "10 KB"
     },
     {
@@ -67,8 +67,5 @@
     "size-limit": "^5.0.3",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.3"
-  },
-  "publishConfig": {
-    "@namuol:registry": "https://npm.pkg.github.com"
   }
 }
