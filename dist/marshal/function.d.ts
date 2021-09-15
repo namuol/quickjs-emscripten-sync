@@ -1,0 +1,2 @@
+import { QuickJSVm, QuickJSHandle } from "quickjs-emscripten";
+export default function marshalFunction(vm: QuickJSVm, target: unknown, marshal: (target: unknown) => QuickJSHandle, unmarshal: (handle: QuickJSHandle) => unknown, preMarshal: (target: unknown, handle: QuickJSHandle) => QuickJSHandle | undefined, preApply?: (target: Function, thisArg: unknown, args: unknown[]) => any): QuickJSHandle | undefined;
