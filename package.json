@@ -4,7 +4,7 @@
   "version": "1.2.0",
   "license": "MIT",
   "source": "./src/index.ts",
-  "main": "./dist/quickjs-emscripten-sync.cjs",
+  "main": "./dist/quickjs-emscripten-sync.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "files": [
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "microbundle watch --tsconfig tsconfig.build.json",
-    "build": "microbundle --tsconfig tsconfig.build.json",
+    "build": "microbundle --no-compress --tsconfig tsconfig.build.json",
     "test": "jest",
     "lint": "tsc && eslint --ext '.ts,.tsx,.js' .",
     "size": "size-limit",
@@ -36,7 +36,7 @@
   },
   "size-limit": [
     {
-      "path": "dist/quickjs-emscripten-sync.cjs",
+      "path": "dist/quickjs-emscripten-sync.js",
       "limit": "10 KB"
     },
     {

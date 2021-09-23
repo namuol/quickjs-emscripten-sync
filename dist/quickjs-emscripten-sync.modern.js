@@ -1,2 +1,1061 @@
-let e;e=Symbol.iterator;class t{constructor(e){this.vm=void 0,this._map1=new Map,this._map2=new Map,this._map3=new Map,this._map4=new Map,this._counterMap=new Map,this._disposables=new Set,this._mapGet=void 0,this._mapSet=void 0,this._mapDelete=void 0,this._mapClear=void 0,this._counter=0,this.vm=e;const t=e.unwrapResult(e.evalCode('() => {\n        const mapSym = new Map();\n        let map = new WeakMap();\n        let map2 = new WeakMap();\n        const isObj = o => typeof o === "object" && o !== null || typeof o === "function";\n        return {\n          get: key => mapSym.get(key) ?? map.get(key) ?? map2.get(key) ?? -1,\n          set: (key, value, key2) => {\n            if (typeof key === "symbol") mapSym.set(key, value);\n            if (isObj(key)) map.set(key, value);\n            if (isObj(key2)) map2.set(key2, value);\n          },\n          delete: (key, key2) => {\n            mapSym.delete(key);\n            map.delete(key);\n            map2.delete(key2);\n          },\n          clear: () => {\n            mapSym.clear();\n            map = new WeakMap();\n            map2 = new WeakMap();\n          }\n        };\n      }')).consume(e=>this._call(e,void 0));this._mapGet=e.getProp(t,"get"),this._mapSet=e.getProp(t,"set"),this._mapDelete=e.getProp(t,"delete"),this._mapClear=e.getProp(t,"clear"),t.dispose(),this._disposables.add(this._mapGet),this._disposables.add(this._mapSet),this._disposables.add(this._mapDelete),this._disposables.add(this._mapClear)}set(e,t,n,r){var s;if(!t.alive||r&&!r.alive)return!1;const o=null!=(s=this.get(e))?s:this.get(n);if(o)return o===t||o===r;const i=this._counter++;return this._map1.set(e,i),this._map3.set(i,t),this._counterMap.set(i,e),n&&(this._map2.set(n,i),r&&this._map4.set(i,r)),this.vm.newNumber(i).consume(e=>{this._call(this._mapSet,void 0,t,e,null!=r?r:this.vm.undefined)}),!0}merge(e){if(e)for(const t of e)t&&t[1]&&this.set(t[0],t[1],t[2],t[3])}get(e){var t;const n=null!=(t=this._map1.get(e))?t:this._map2.get(e),r="number"==typeof n?this._map3.get(n):void 0;if(r){if(r.alive)return r;this.delete(e)}}getByHandle(e){if(e.alive)return this._counterMap.get(this.vm.getNumber(this._call(this._mapGet,void 0,e)))}has(e){return!!this.get(e)}hasHandle(e){return void 0!==this.getByHandle(e)}delete(e,t){var n;const r=null!=(n=this._map1.get(e))?n:this._map2.get(e);if(void 0===r)return;const s=this._map3.get(r),o=this._map4.get(r);this._call(this._mapDelete,void 0,...[s,o].filter(e=>!(null==e||!e.alive))),this._map1.delete(e),this._map2.delete(e),this._map3.delete(r),this._map4.delete(r);for(const[e,t]of this._map1)if(t===r){this._map1.delete(e);break}for(const[e,t]of this._map2)if(t===r){this._map2.delete(e);break}for(const[t,n]of this._counterMap)if(n===e){this._counterMap.delete(t);break}t&&(null!=s&&s.alive&&s.dispose(),null!=o&&o.alive&&o.dispose())}deleteByHandle(e,t){const n=this.getByHandle(e);void 0!==n&&this.delete(n,t)}clear(){this._counter=0,this._map1.clear(),this._map2.clear(),this._map3.clear(),this._map4.clear(),this._counterMap.clear(),this._mapClear.alive&&this._call(this._mapClear,void 0)}dispose(){for(const e of this._disposables.values())e.alive&&e.dispose();for(const e of this._map3.values())e.alive&&e.dispose();for(const e of this._map4.values())e.alive&&e.dispose();this._disposables.clear(),this.clear()}get size(){return this._map1.size}[e](){const e=this._map1.keys();return{next:()=>{for(;;){const t=e.next();if(t.done)return{value:void 0,done:!0};const n=this._map1.get(t.value);if(void 0===n)continue;const r=this._map3.get(n),s=this._map4.get(n);if(!r)continue;const o=this._get2(n);return{value:[t.value,r,o,s],done:!1}}}}}_get2(e){for(const[t,n]of this._map2)if(n===e)return t}_call(e,t,...n){return this.vm.unwrapResult(this.vm.callFunction(e,void 0===t?this.vm.undefined:t,...n))}}function n(e){return"function"==typeof e&&/^class\s/.test(Function.prototype.toString.call(e))}function r(e){return"function"==typeof e||"object"==typeof e&&null!==e}function s(e,t){const n=new Set,s=e=>{if(r(e)&&!n.has(e)&&!1!==(null==t?void 0:t(e,n)))if(n.add(e),Array.isArray(e))for(const t of e)s(t);else{if("object"==typeof e){const t=Object.getPrototypeOf(e);t&&t!==Object.prototype&&s(t)}for(const t of Object.values(Object.getOwnPropertyDescriptors(e)))"value"in t&&s(t.value),"get"in t&&s(t.get),"set"in t&&s(t.set)}};return s(e),n}function o(e,t){return s(e,t?(e,n)=>n.size<t:void 0).size}function i(e,t,n,...r){return e.unwrapResult(e.evalCode(t)).consume(t=>void 0===n&&0===r.length?t:e.unwrapResult(e.callFunction(t,null!=n?n:e.undefined,...r)))}function a(e,t,n){return e.dump(i(e,"Object.is",void 0,t,n))}function l(e,t){return e.dump(i(e,'a => typeof a === "object" && a !== null || typeof a === "function"',void 0,t))}function u(e,t){const n=JSON.stringify(t);return n?i(e,"JSON.parse",void 0,e.newString(n)):e.undefined}function p(e,t){try{return t(e)}finally{for(const t of e)t.alive&&t.dispose()}}function c(e,t,n,r){const s=e.newObject(),o=(t,n)=>{const o=r(t),i=void 0===n.value?void 0:r(n.value),a=void 0===n.get?void 0:r(n.get),l=void 0===n.set?void 0:r(n.set);e.newObject().consume(t=>{Object.entries(n).forEach(([n,r])=>{const s="value"===n?i:"get"===n?a:"set"===n?l:r?e.true:e.false;s&&e.setProp(t,n,s)}),e.setProp(s,o,t)})},a=Object.getOwnPropertyDescriptors(t);Object.entries(a).forEach(([e,t])=>o(e,t)),Object.getOwnPropertySymbols(a).forEach(e=>o(e,a[e])),i(e,"Object.defineProperties",void 0,n,s).dispose(),s.dispose()}function d(e,t){var s,o,a;const{vm:l,unmarshal:u,isMarshalable:p,find:h,pre:f}=t;{const t=function(e,t){switch(typeof t){case"undefined":return e.undefined;case"number":return e.newNumber(t);case"string":return e.newString(t);case"boolean":return t?e.true:e.false;case"object":return null===t?e.null:void 0}}(l,e);if(t)return t}{const t=h(e);if(t)return t}if(!1===(null==p?void 0:p(e)))return l.undefined;const y=e=>d(e,t),m=null!=(s=null!=(o=null!=(a=function(e,t,n){var r;if("symbol"!=typeof t)return;const s=i(e,"d => Symbol(d)",void 0,t.description?e.newString(t.description):e.undefined);return null!=(r=n(t,s))?r:s}(l,e,f))?a:function(e,t,s,o,a,l){var u;if("function"!=typeof t)return;const p=e.newFunction(t.name,function(...i){const a=o(this),u=i.map(e=>o(e));if(n(t)&&r(a)){const n=new t(...u);return Object.entries(n).forEach(([t,n])=>{e.setProp(this,t,s(n))}),this}return s(l?l(t,a,u):t.apply(a,u))}).consume(t=>i(e,"Cls => {\n          const fn = function(...args) { return Cls.apply(this, args); };\n          fn.name = Cls.name;\n          fn.length = Cls.length;\n          return fn;\n        }",void 0,t)),d=null!=(u=a(t,p))?u:p;return c(e,t,p,s),d}(l,e,y,u,f,t.preApply))?o:function(e,t,n,r){var s;if("object"!=typeof t||null===t)return;const o=Array.isArray(t)?e.newArray():e.newObject(),a=null!=(s=r(t,o))?s:o,l=Object.getPrototypeOf(t),u=l&&l!==Object.prototype&&l!==Array.prototype?n(l):void 0;return u&&i(e,"Object.setPrototypeOf",void 0,a,u).dispose(),c(e,t,o,n),a}(l,e,y,f))?s:l.undefined;return m}function h(e,t,n,r){e.newFunction("",(t,s)=>{const[o]=r(t);if("string"!=typeof o&&"number"!=typeof o&&"symbol"!=typeof o)return;const i=[["value",!0],["get",!0],["set",!0],["configurable",!1],["enumerable",!1],["writable",!1]].reduce((t,[n,o])=>{const i=e.getProp(s,n),a=e.typeof(i);if("undefined"===a)return t;if(!o&&"boolean"===a)return t[n]=e.dump(e.getProp(s,n)),t;const[l,u]=r(i);return u&&i.dispose(),t[n]=l,t},{});Object.defineProperty(n,o,i)}).consume(n=>{i(e,"(o, fn) => {\n        const descs = Object.getOwnPropertyDescriptors(o);\n        Object.entries(descs).forEach(([k, v]) => fn(k, v));\n        Object.getOwnPropertySymbols(descs).forEach(k => fn(k, descs[k]));\n      }",void 0,t,n).dispose()})}function f(e,t){const[n]=y(e,t);return n}function y(e,t){var n,r;const{vm:s,marshal:o,find:a,pre:l}=t;{const[t,n]=function(e,t){const n=e.typeof(t);return"undefined"===n||"number"===n||"string"===n||"boolean"===n?[e.dump(t),!0]:"object"===n&&e.unwrapResult(e.evalCode("a => a === null")).consume(n=>e.dump(e.unwrapResult(e.callFunction(n,e.undefined,t))))?[null,!0]:[void 0,!1]}(s,e);if(n)return[t,!1]}{const t=a(e);if(t)return[t,!0]}const u=e=>y(e,t),p=null!=(n=null!=(r=function(e,t,n){var r;if("symbol"!==e.typeof(t))return;const s=e.getString(e.getProp(t,"description")),o=Symbol(s);return null!=(r=n(o,t))?r:o}(s,e,l))?r:function(e,t,n,r,s){var o;if("function"!==e.typeof(t))return;const a=function(...s){const o=n(this),a=s.map(e=>n(e));if(new.target){const[n]=r(i(e,"(Cls, ...args) => new Cls(...args)",o,t,...a));return Object.defineProperties(this,Object.getOwnPropertyDescriptors(n)),this}const l=e.unwrapResult(e.callFunction(t,o,...a)),[u,p]=r(l);return p&&l.dispose(),u},l=null!=(o=s(a,t))?o:a;return h(e,t,a,r),l}(s,e,o,u,l))?n:function(e,t,n,r){var s;if("object"!==e.typeof(t)||e.unwrapResult(e.evalCode("o => o === null")).consume(n=>e.dump(e.unwrapResult(e.callFunction(n,e.undefined,t)))))return;const o=i(e,"Array.isArray",void 0,t).consume(t=>e.dump(t))?[]:{},a=null!=(s=r(o,t))?s:o,l=i(e,"o => {\n      const p = Object.getPrototypeOf(o);\n      return !p || p === Object.prototype || p === Array.prototype ? undefined : p;\n    }",void 0,t).consume(t=>{if("undefined"===e.typeof(t))return;const[r]=n(t);return r});return"object"==typeof l&&Object.setPrototypeOf(a,l),h(e,t,o,n),a}(s,e,u,l);return[p,!1]}function m(e,t){var n;return r(e)&&null!=(n=e[t])?n:e}function v(e,t,n){return _(e,t,n)?[e.getProp(t,n),!0]:[t,!1]}function _(e,t,n){return!!e.dump(i(e,'(a, s) => (typeof a === "object" && a !== null || typeof a === "function") && !!a[s]',void 0,t,n))}const g=[[Symbol,"Symbol"],[Symbol.prototype,"Symbol.prototype"],[Object,"Object"],[Object.prototype,"Object.prototype"],[Function,"Function"],[Function.prototype,"Function.prototype"],[Boolean,"Boolean"],[Boolean.prototype,"Boolean.prototype"],[Array,"Array"],[Array.prototype,"Array.prototype"],[Error,"Error"],[Error.prototype,"Error.prototype"],[EvalError,"EvalError"],[EvalError.prototype,"EvalError.prototype"],[RangeError,"RangeError"],[RangeError.prototype,"RangeError.prototype"],[ReferenceError,"ReferenceError"],[ReferenceError.prototype,"ReferenceError.prototype"],[SyntaxError,"SyntaxError"],[SyntaxError.prototype,"SyntaxError.prototype"],[TypeError,"TypeError"],[TypeError.prototype,"TypeError.prototype"],[URIError,"URIError"],[URIError.prototype,"URIError.prototype"],...Object.getOwnPropertyNames(Symbol).filter(e=>"symbol"==typeof Symbol[e]).map(e=>[Symbol[e],`Symbol.${e}`])];class b{constructor(e,n){var r;this.vm=void 0,this._map=void 0,this._registeredMap=void 0,this._registeredMapDispose=new Set,this._sync=new Set,this._temporalSync=new Set,this._symbol=Symbol(),this._symbolHandle=void 0,this._options=void 0,this.vm=e,this._options=n,this._symbolHandle=e.unwrapResult(e.evalCode("Symbol()")),this._map=new t(e),this._registeredMap=new t(e),this.registerAll(null!=(r=null==n?void 0:n.registeredObjects)?r:g)}dispose(){this._map.dispose(),this._registeredMap.dispose(),this._symbolHandle.dispose()}evalCode(e){const t=this.vm.evalCode(e);return this._unwrapResultAndUnmarshal(t)}executePendingJobs(e){const t=this.vm.executePendingJobs(e);if("value"in t)return t.value;throw t.error.consume(e=>this._unmarshal(e))}expose(e){for(const[t,n]of Object.entries(e)){const e=this._marshal(n);this.vm.setProp(this.vm.global,t,e)}}sync(e){const t=this._wrap(e);return void 0===t?e:(s(t,e=>{this._sync.add(this._unwrap(e))}),t)}register(e,t){if(this._registeredMap.has(e))return;const n="string"==typeof t?this._unwrapResult(this.vm.evalCode(t)):t;a(this.vm,n,this.vm.undefined)||("string"==typeof t&&this._registeredMapDispose.add(e),this._registeredMap.set(e,n))}registerAll(e){for(const[t,n]of e)this.register(t,n)}unregister(e,t){this._registeredMap.delete(e,this._registeredMapDispose.has(e)||t),this._registeredMapDispose.delete(e)}unregisterAll(e,t){for(const n of e)this.unregister(n,t)}startSync(e){r(e)&&this._sync.add(this._unwrap(e))}endSync(e){this._sync.delete(this._unwrap(e))}_unwrapResult(e){if("value"in e)return e.value;throw e.error.consume(e=>this._unmarshal(e))}_unwrapResultAndUnmarshal(e){if(e)return this._unwrapResult(e).consume(e=>this._unmarshal(e))}_marshal(e){var t;const n=this._registeredMap.get(e);if(n)return n;const s=d(null!=(t=this._wrap(e))?t:e,{vm:this.vm,unmarshal:e=>this._unmarshal(e),isMarshalable:e=>{var t,n;return null==(t=null==(n=this._options)||null==n.isMarshalable?void 0:n.isMarshalable(this._unwrap(e)))||t},find:e=>{var t;return null!=(t=this._registeredMap.get(e))?t:this._map.get(e)},pre:(e,t)=>{var n;return null==(n=this._register(e,t,this._map))?void 0:n[1]},preApply:(e,t,n)=>{const s=r(t)?this._unwrap(t):void 0;s&&this._temporalSync.add(s);try{return e.apply(t,n)}finally{s&&this._temporalSync.delete(s)}}});return s}_unmarshal(e){const t=this._registeredMap.getByHandle(e);if(void 0!==t)return t;const[n]=this._wrapHandle(e);return f(null!=n?n:e,{vm:this.vm,marshal:e=>this._marshal(e),find:e=>{var t;return null!=(t=this._registeredMap.getByHandle(e))?t:this._map.getByHandle(e)},pre:(e,t)=>{var n;return null==(n=this._register(e,t,void 0,!0))?void 0:n[0]}})}_register(e,t,n=this._map,r){if(this._registeredMap.has(e)||this._registeredMap.hasHandle(t))return;const s=this._wrap(e),[o]=this._wrapHandle(t);if(!s||!o)return;const i=this._unwrap(e),[a,l]=this._unwrapHandle(t);if(!n.set(s,o,i,a))throw l&&a.dispose(),new Error("already registered");return r&&this._sync.add(i),[s,o]}_syncMode(e){const t=this._unwrap(e);return this._sync.has(t)||this._temporalSync.has(t)?"both":void 0}_wrap(e){return function(e,t,n,s,o,a){if(!r(t))return;if(u=n,r(l=t)&&l[u])return t;var l,u;const p=new Proxy(t,{get:(e,t)=>t===n?e:Reflect.get(e,t),set(t,r,i,l){var u;const p=m(i,n),c=null!=(u=null==a?void 0:a(l))?u:"host";if("vm"===c||Reflect.set(t,r,p,l)){if("host"===c)return!0;const[t,n]=v(e,o(l),s);n?t.consume(t=>e.setProp(t,o(r),o(p))):e.setProp(t,o(r),o(p))}return!0},deleteProperty(t,n){var r;const l=null!=(r=null==a?void 0:a(p))?r:"host",[u,c]=v(e,o(p),s);if("vm"===l||Reflect.deleteProperty(t,n)){if("host"===l)return!0;c?u.consume(t=>i(e,"(a, b) => delete a[b]",void 0,t,o(n))):i(e,"(a, b) => delete a[b]",void 0,u,o(n))}return!0}});return p}(this.vm,e,this._symbol,this._symbolHandle,e=>this._marshal(e),e=>this._syncMode(e))}_unwrap(e){return m(e,this._symbol)}_wrapHandle(e){return function(e,t,n,r,s,o){return l(e,t)?_(e,t,r)?[t,!1]:p([e.newFunction("getSyncMode",t=>{const n=null==o?void 0:o(s(t));return"string"==typeof n?e.newString(n):e.undefined}),e.newFunction("setter",(e,t,r)=>{const o=s(e);if(!o)return;const i=s(t);if("__proto__"===i)return;const a=s(r);m(o,n)[i]=a}),e.newFunction("deleter",(e,t)=>{const r=s(e);if(!r)return;const o=s(t);delete m(r,n)[o]})],n=>[i(e,'(target, sym, getSyncMode, setter, deleter) => {\n          const rec =  new Proxy(target, {\n            get(obj, key, receiver) {\n              return key === sym ? obj : Reflect.get(obj, key, receiver)\n            },\n            set(obj, key, value, receiver) {\n              const v = typeof value === "object" && value !== null || typeof value === "function"\n                ? value[sym] ?? value\n                : value;\n              const sync = getSyncMode(receiver) ?? "vm";\n              if (sync === "host" || Reflect.set(obj, key, v, receiver)) {\n                if (sync !== "vm") {\n                  setter(receiver, key, v);\n                }\n              }\n              return true;\n            },\n            deleteProperty(obj, key) {\n              const sync = getSyncMode(rec) ?? "vm";\n              if (sync === "host" || Reflect.deleteProperty(obj, key)) {\n                if (sync !== "vm") {\n                  deleter(rec, key);\n                }\n              }\n              return true;\n            },\n          });\n          return rec;\n        }',void 0,t,r,...n),!0]):[void 0,!1]}(this.vm,e,this._symbol,this._symbolHandle,e=>this._unmarshal(e),e=>this._syncMode(e))}_unwrapHandle(e){return v(this.vm,e,this._symbolHandle)}}export{b as Arena,t as VMMap,i as call,o as complexity,p as consumeAll,g as defaultRegisteredObjects,a as eq,n as isES2015Class,l as isHandleObject,r as isObject,d as marshal,u as send,f as unmarshal,s as walkObject};
+let _Symbol$iterator;
+
+_Symbol$iterator = Symbol.iterator;
+class VMMap {
+  constructor(vm) {
+    this.vm = void 0;
+    this._map1 = new Map();
+    this._map2 = new Map();
+    this._map3 = new Map();
+    this._map4 = new Map();
+    this._counterMap = new Map();
+    this._disposables = new Set();
+    this._mapGet = void 0;
+    this._mapSet = void 0;
+    this._mapDelete = void 0;
+    this._mapClear = void 0;
+    this._counter = 0;
+    this.vm = vm;
+    const result = vm.unwrapResult(vm.evalCode(`() => {
+        const mapSym = new Map();
+        let map = new WeakMap();
+        let map2 = new WeakMap();
+        const isObj = o => typeof o === "object" && o !== null || typeof o === "function";
+        return {
+          get: key => mapSym.get(key) ?? map.get(key) ?? map2.get(key) ?? -1,
+          set: (key, value, key2) => {
+            if (typeof key === "symbol") mapSym.set(key, value);
+            if (isObj(key)) map.set(key, value);
+            if (isObj(key2)) map2.set(key2, value);
+          },
+          delete: (key, key2) => {
+            mapSym.delete(key);
+            map.delete(key);
+            map2.delete(key2);
+          },
+          clear: () => {
+            mapSym.clear();
+            map = new WeakMap();
+            map2 = new WeakMap();
+          }
+        };
+      }`)).consume(fn => this._call(fn, undefined));
+    this._mapGet = vm.getProp(result, "get");
+    this._mapSet = vm.getProp(result, "set");
+    this._mapDelete = vm.getProp(result, "delete");
+    this._mapClear = vm.getProp(result, "clear");
+    result.dispose();
+
+    this._disposables.add(this._mapGet);
+
+    this._disposables.add(this._mapSet);
+
+    this._disposables.add(this._mapDelete);
+
+    this._disposables.add(this._mapClear);
+  }
+
+  set(key, handle, key2, handle2) {
+    var _this$get;
+
+    if (!handle.alive || handle2 && !handle2.alive) return false;
+    const v = (_this$get = this.get(key)) != null ? _this$get : this.get(key2);
+
+    if (v) {
+      // handle and handle2 are unused so they should be disposed
+      return v === handle || v === handle2;
+    }
+
+    const counter = this._counter++;
+
+    this._map1.set(key, counter);
+
+    this._map3.set(counter, handle);
+
+    this._counterMap.set(counter, key);
+
+    if (key2) {
+      this._map2.set(key2, counter);
+
+      if (handle2) {
+        this._map4.set(counter, handle2);
+      }
+    }
+
+    this.vm.newNumber(counter).consume(c => {
+      this._call(this._mapSet, undefined, handle, c, handle2 != null ? handle2 : this.vm.undefined);
+    });
+    return true;
+  }
+
+  merge(iteratable) {
+    if (!iteratable) return;
+
+    for (const iter of iteratable) {
+      if (!iter) continue;
+
+      if (iter[1]) {
+        this.set(iter[0], iter[1], iter[2], iter[3]);
+      }
+    }
+  }
+
+  get(key) {
+    var _this$_map1$get;
+
+    const num = (_this$_map1$get = this._map1.get(key)) != null ? _this$_map1$get : this._map2.get(key);
+    const handle = typeof num === "number" ? this._map3.get(num) : undefined;
+    if (!handle) return;
+
+    if (!handle.alive) {
+      this.delete(key);
+      return;
+    }
+
+    return handle;
+  }
+
+  getByHandle(handle) {
+    if (!handle.alive) {
+      return;
+    }
+
+    return this._counterMap.get(this.vm.getNumber(this._call(this._mapGet, undefined, handle)));
+  }
+
+  has(key) {
+    return !!this.get(key);
+  }
+
+  hasHandle(handle) {
+    return typeof this.getByHandle(handle) !== "undefined";
+  }
+
+  delete(key, dispose) {
+    var _this$_map1$get2;
+
+    const num = (_this$_map1$get2 = this._map1.get(key)) != null ? _this$_map1$get2 : this._map2.get(key);
+    if (typeof num === "undefined") return;
+
+    const handle = this._map3.get(num);
+
+    const handle2 = this._map4.get(num);
+
+    this._call(this._mapDelete, undefined, ...[handle, handle2].filter(h => !!(h != null && h.alive)));
+
+    this._map1.delete(key);
+
+    this._map2.delete(key);
+
+    this._map3.delete(num);
+
+    this._map4.delete(num);
+
+    for (const [k, v] of this._map1) {
+      if (v === num) {
+        this._map1.delete(k);
+
+        break;
+      }
+    }
+
+    for (const [k, v] of this._map2) {
+      if (v === num) {
+        this._map2.delete(k);
+
+        break;
+      }
+    }
+
+    for (const [k, v] of this._counterMap) {
+      if (v === key) {
+        this._counterMap.delete(k);
+
+        break;
+      }
+    }
+
+    if (dispose) {
+      if (handle != null && handle.alive) handle.dispose();
+      if (handle2 != null && handle2.alive) handle2.dispose();
+    }
+  }
+
+  deleteByHandle(handle, dispose) {
+    const key = this.getByHandle(handle);
+
+    if (typeof key !== "undefined") {
+      this.delete(key, dispose);
+    }
+  }
+
+  clear() {
+    this._counter = 0;
+
+    this._map1.clear();
+
+    this._map2.clear();
+
+    this._map3.clear();
+
+    this._map4.clear();
+
+    this._counterMap.clear();
+
+    if (this._mapClear.alive) {
+      this._call(this._mapClear, undefined);
+    }
+  }
+
+  dispose() {
+    for (const v of this._disposables.values()) {
+      if (v.alive) {
+        v.dispose();
+      }
+    }
+
+    for (const v of this._map3.values()) {
+      if (v.alive) {
+        v.dispose();
+      }
+    }
+
+    for (const v of this._map4.values()) {
+      if (v.alive) {
+        v.dispose();
+      }
+    }
+
+    this._disposables.clear();
+
+    this.clear();
+  }
+
+  get size() {
+    return this._map1.size;
+  }
+
+  [_Symbol$iterator]() {
+    const keys = this._map1.keys();
+
+    return {
+      next: () => {
+        while (true) {
+          const k1 = keys.next();
+          if (k1.done) return {
+            value: undefined,
+            done: true
+          };
+
+          const n = this._map1.get(k1.value);
+
+          if (typeof n === "undefined") continue;
+
+          const v1 = this._map3.get(n);
+
+          const v2 = this._map4.get(n);
+
+          if (!v1) continue;
+
+          const k2 = this._get2(n);
+
+          return {
+            value: [k1.value, v1, k2, v2],
+            done: false
+          };
+        }
+      }
+    };
+  }
+
+  _get2(num) {
+    for (const [k, v] of this._map2) {
+      if (v === num) return k;
+    }
+  }
+
+  _call(fn, thisArg, ...args) {
+    return this.vm.unwrapResult(this.vm.callFunction(fn, typeof thisArg === "undefined" ? this.vm.undefined : thisArg, ...args));
+  }
+
+}
+
+function isES2015Class(cls) {
+  return typeof cls === "function" && /^class\s/.test(Function.prototype.toString.call(cls));
+}
+function isObject(value) {
+  return typeof value === "function" || typeof value === "object" && value !== null;
+}
+function walkObject(value, callback) {
+  const set = new Set();
+
+  const walk = v => {
+    if (!isObject(v) || set.has(v) || (callback == null ? void 0 : callback(v, set)) === false) return;
+    set.add(v);
+
+    if (Array.isArray(v)) {
+      for (const e of v) {
+        walk(e);
+      }
+
+      return;
+    }
+
+    if (typeof v === "object") {
+      const proto = Object.getPrototypeOf(v);
+
+      if (proto && proto !== Object.prototype) {
+        walk(proto);
+      }
+    }
+
+    for (const d of Object.values(Object.getOwnPropertyDescriptors(v))) {
+      if ("value" in d) walk(d.value);
+      if ("get" in d) walk(d.get);
+      if ("set" in d) walk(d.set);
+    }
+  };
+
+  walk(value);
+  return set;
+}
+/**
+ * Measure the complexity of an object as you traverse the field and prototype chain. If max is specified, when the complexity reaches max, the traversal is terminated and it returns the max. In this function, one object and function are counted as a complexity of 1, and primitives are not counted as a complexity.
+ */
+
+function complexity(value, max) {
+  return walkObject(value, max ? (_, set) => set.size < max : undefined).size;
+}
+
+function call(vm, code, thisArg, ...args) {
+  return vm.unwrapResult(vm.evalCode(code)).consume(f => {
+    if (typeof thisArg === "undefined" && args.length === 0) return f;
+    return vm.unwrapResult(vm.callFunction(f, thisArg != null ? thisArg : vm.undefined, ...args));
+  });
+}
+function eq(vm, a, b) {
+  return vm.dump(call(vm, "Object.is", undefined, a, b));
+}
+function isHandleObject(vm, a) {
+  return vm.dump(call(vm, `a => typeof a === "object" && a !== null || typeof a === "function"`, undefined, a));
+}
+function send(vm, target) {
+  const json = JSON.stringify(target);
+  if (!json) return vm.undefined;
+  return call(vm, `JSON.parse`, undefined, vm.newString(json));
+}
+function consumeAll(handles, cb) {
+  try {
+    return cb(handles);
+  } finally {
+    for (const h of handles) {
+      if (h.alive) h.dispose();
+    }
+  }
+}
+
+function marshalProperties(vm, target, handle, marshal) {
+  const descs = vm.newObject();
+
+  const cb = (key, desc) => {
+    const keyHandle = marshal(key);
+    const valueHandle = typeof desc.value === "undefined" ? undefined : marshal(desc.value);
+    const getHandle = typeof desc.get === "undefined" ? undefined : marshal(desc.get);
+    const setHandle = typeof desc.set === "undefined" ? undefined : marshal(desc.set);
+    vm.newObject().consume(descObj => {
+      Object.entries(desc).forEach(([k, v]) => {
+        const v2 = k === "value" ? valueHandle : k === "get" ? getHandle : k === "set" ? setHandle : v ? vm.true : vm.false;
+
+        if (v2) {
+          vm.setProp(descObj, k, v2);
+        }
+      });
+      vm.setProp(descs, keyHandle, descObj);
+    });
+  };
+
+  const desc = Object.getOwnPropertyDescriptors(target);
+  Object.entries(desc).forEach(([k, v]) => cb(k, v));
+  Object.getOwnPropertySymbols(desc).forEach(k => cb(k, desc[k]));
+  call(vm, `Object.defineProperties`, undefined, handle, descs).dispose();
+  descs.dispose();
+}
+
+function marshalFunction(vm, target, marshal, unmarshal, preMarshal, preApply) {
+  var _preMarshal;
+
+  if (typeof target !== "function") return;
+  const raw = vm.newFunction(target.name, function (...argHandles) {
+    const that = unmarshal(this);
+    const args = argHandles.map(a => unmarshal(a));
+
+    if (isES2015Class(target) && isObject(that)) {
+      // Class constructors cannot be invoked without new expression, and new.target is not changed
+      const result = new target(...args);
+      Object.entries(result).forEach(([key, value]) => {
+        vm.setProp(this, key, marshal(value));
+      });
+      return this;
+    }
+
+    return marshal(preApply ? preApply(target, that, args) : target.apply(that, args));
+  }).consume(handle2 => // fucntions created by vm.newFunction are not callable as a class constrcutor
+  call(vm, `Cls => {
+          const fn = function(...args) { return Cls.apply(this, args); };
+          fn.name = Cls.name;
+          fn.length = Cls.length;
+          return fn;
+        }`, undefined, handle2));
+  const handle = (_preMarshal = preMarshal(target, raw)) != null ? _preMarshal : raw;
+  marshalProperties(vm, target, raw, marshal);
+  return handle;
+}
+
+function marshalObject(vm, target, marshal, preMarshal) {
+  var _preMarshal;
+
+  if (typeof target !== "object" || target === null) return;
+  const raw = Array.isArray(target) ? vm.newArray() : vm.newObject();
+  const handle = (_preMarshal = preMarshal(target, raw)) != null ? _preMarshal : raw; // prototype
+
+  const prototype = Object.getPrototypeOf(target);
+  const prototypeHandle = prototype && prototype !== Object.prototype && prototype !== Array.prototype ? marshal(prototype) : undefined;
+
+  if (prototypeHandle) {
+    call(vm, "Object.setPrototypeOf", undefined, handle, prototypeHandle).dispose();
+  }
+
+  marshalProperties(vm, target, raw, marshal);
+  return handle;
+}
+
+// import { call } from "../vmutil";
+function marshalPrimitive(vm, target) {
+  switch (typeof target) {
+    case "undefined":
+      return vm.undefined;
+
+    case "number":
+      return vm.newNumber(target);
+
+    case "string":
+      return vm.newString(target);
+
+    case "boolean":
+      return target ? vm.true : vm.false;
+
+    case "object":
+      return target === null ? vm.null : undefined;
+    // BigInt is not supported by quickjs-emscripten
+    // case "bigint":
+    //   return call(
+    //     vm,
+    //     `s => BigInt(s)`,
+    //     undefined,
+    //     vm.newString(target.toString())
+    //   );
+  }
+
+  return undefined;
+}
+
+function marshalSymbol(vm, target, preMarshal) {
+  var _preMarshal;
+
+  if (typeof target !== "symbol") return;
+  const handle = call(vm, "d => Symbol(d)", undefined, target.description ? vm.newString(target.description) : vm.undefined);
+  return (_preMarshal = preMarshal(target, handle)) != null ? _preMarshal : handle;
+}
+
+function marshal(target, options) {
+  var _ref, _ref2, _marshalSymbol;
+
+  const {
+    vm,
+    unmarshal,
+    isMarshalable,
+    find,
+    pre
+  } = options;
+  {
+    const primitive = marshalPrimitive(vm, target);
+
+    if (primitive) {
+      return primitive;
+    }
+  }
+  {
+    const handle = find(target);
+    if (handle) return handle;
+  }
+
+  if ((isMarshalable == null ? void 0 : isMarshalable(target)) === false) {
+    return vm.undefined;
+  }
+
+  const marshal2 = t => marshal(t, options);
+
+  const result = (_ref = (_ref2 = (_marshalSymbol = marshalSymbol(vm, target, pre)) != null ? _marshalSymbol : marshalFunction(vm, target, marshal2, unmarshal, pre, options.preApply)) != null ? _ref2 : marshalObject(vm, target, marshal2, pre)) != null ? _ref : vm.undefined;
+  return result;
+}
+
+function unmarshalProperties(vm, handle, target, unmarshal) {
+  vm.newFunction("", (key, value) => {
+    const [keyName] = unmarshal(key);
+    if (typeof keyName !== "string" && typeof keyName !== "number" && typeof keyName !== "symbol") return;
+    const desc = [["value", true], ["get", true], ["set", true], ["configurable", false], ["enumerable", false], ["writable", false]].reduce((desc, [key, unmarshable]) => {
+      const h = vm.getProp(value, key);
+      const ty = vm.typeof(h);
+      if (ty === "undefined") return desc;
+
+      if (!unmarshable && ty === "boolean") {
+        desc[key] = vm.dump(vm.getProp(value, key));
+        return desc;
+      }
+
+      const [v, alreadyExists] = unmarshal(h);
+
+      if (alreadyExists) {
+        h.dispose();
+      }
+
+      desc[key] = v;
+      return desc;
+    }, {});
+    Object.defineProperty(target, keyName, desc);
+  }).consume(fn => {
+    call(vm, `(o, fn) => {
+        const descs = Object.getOwnPropertyDescriptors(o);
+        Object.entries(descs).forEach(([k, v]) => fn(k, v));
+        Object.getOwnPropertySymbols(descs).forEach(k => fn(k, descs[k]));
+      }`, undefined, handle, fn).dispose();
+  });
+}
+
+function unmarshalFunction(vm, handle, marshal, unmarshal, preUnmarshal) {
+  var _preUnmarshal;
+
+  if (vm.typeof(handle) !== "function") return;
+
+  const raw = function raw(...args) {
+    const thisHandle = marshal(this);
+    const argHandles = args.map(a => marshal(a));
+
+    if (new.target) {
+      const [instance] = unmarshal(call(vm, `(Cls, ...args) => new Cls(...args)`, thisHandle, handle, ...argHandles));
+      Object.defineProperties(this, Object.getOwnPropertyDescriptors(instance));
+      return this;
+    }
+
+    const resultHandle = vm.unwrapResult(vm.callFunction(handle, thisHandle, ...argHandles));
+    const [result, alreadyExists] = unmarshal(resultHandle);
+    if (alreadyExists) resultHandle.dispose();
+    return result;
+  };
+
+  const func = (_preUnmarshal = preUnmarshal(raw, handle)) != null ? _preUnmarshal : raw;
+  unmarshalProperties(vm, handle, raw, unmarshal);
+  return func;
+}
+
+function unmarshalObject(vm, handle, unmarshal, preUnmarshal) {
+  var _preUnmarshal;
+
+  if (vm.typeof(handle) !== "object" || // null check
+  vm.unwrapResult(vm.evalCode("o => o === null")).consume(n => vm.dump(vm.unwrapResult(vm.callFunction(n, vm.undefined, handle))))) return;
+  const raw = call(vm, "Array.isArray", undefined, handle).consume(r => vm.dump(r)) ? [] : {};
+  const obj = (_preUnmarshal = preUnmarshal(raw, handle)) != null ? _preUnmarshal : raw;
+  const prototype = call(vm, `o => {
+      const p = Object.getPrototypeOf(o);
+      return !p || p === Object.prototype || p === Array.prototype ? undefined : p;
+    }`, undefined, handle).consume(prototype => {
+    if (vm.typeof(prototype) === "undefined") return;
+    const [proto] = unmarshal(prototype);
+    return proto;
+  });
+
+  if (typeof prototype === "object") {
+    Object.setPrototypeOf(obj, prototype);
+  }
+
+  unmarshalProperties(vm, handle, raw, unmarshal);
+  return obj;
+}
+
+function unmarshalPrimitive(vm, handle) {
+  const ty = vm.typeof(handle);
+
+  if (ty === "undefined" || ty === "number" || ty === "string" || ty === "boolean") {
+    return [vm.dump(handle), true];
+  } else if (ty === "object") {
+    const isNull = vm.unwrapResult(vm.evalCode("a => a === null")).consume(n => vm.dump(vm.unwrapResult(vm.callFunction(n, vm.undefined, handle))));
+
+    if (isNull) {
+      return [null, true];
+    }
+  } // BigInt is not supported by quickjs-emscripten
+  // if (ty === "bigint") {
+  //   const str = vm
+  //     .getProp(handle, "toString")
+  //     .consume(toString => vm.unwrapResult(vm.callFunction(toString, handle)))
+  //     .consume(str => vm.getString(str));
+  //   const bi = BigInt(str);
+  //   return [bi, true];
+  // }
+
+
+  return [undefined, false];
+}
+
+function unmarshalSymbol(vm, handle, preUnmarshal) {
+  var _preUnmarshal;
+
+  if (vm.typeof(handle) !== "symbol") return;
+  const desc = vm.getString(vm.getProp(handle, "description"));
+  const sym = Symbol(desc);
+  return (_preUnmarshal = preUnmarshal(sym, handle)) != null ? _preUnmarshal : sym;
+}
+
+function unmarshal(handle, options) {
+  const [result] = unmarshalInner(handle, options);
+  return result;
+}
+
+function unmarshalInner(handle, options) {
+  var _ref, _unmarshalSymbol;
+
+  const {
+    vm,
+    marshal,
+    find,
+    pre
+  } = options;
+  {
+    const [target, ok] = unmarshalPrimitive(vm, handle);
+    if (ok) return [target, false];
+  }
+  {
+    const target = find(handle);
+
+    if (target) {
+      return [target, true];
+    }
+  }
+
+  const unmarshal2 = h => unmarshalInner(h, options);
+
+  const result = (_ref = (_unmarshalSymbol = unmarshalSymbol(vm, handle, pre)) != null ? _unmarshalSymbol : unmarshalFunction(vm, handle, marshal, unmarshal2, pre)) != null ? _ref : unmarshalObject(vm, handle, unmarshal2, pre);
+  return [result, false];
+}
+
+function wrap(vm, target, proxyKeySymbol, proxyKeySymbolHandle, marshal, syncMode) {
+  if (!isObject(target)) return undefined;
+  if (isWrapped(target, proxyKeySymbol)) return target;
+  const rec = new Proxy(target, {
+    get(obj, key) {
+      return key === proxyKeySymbol ? obj : Reflect.get(obj, key);
+    },
+
+    set(obj, key, value, receiver) {
+      var _syncMode;
+
+      const v = unwrap(value, proxyKeySymbol);
+      const sync = (_syncMode = syncMode == null ? void 0 : syncMode(receiver)) != null ? _syncMode : "host";
+
+      if (sync === "vm" || Reflect.set(obj, key, v, receiver)) {
+        if (sync === "host") return true;
+        const [handle2, unwrapped] = unwrapHandle(vm, marshal(receiver), proxyKeySymbolHandle);
+
+        if (unwrapped) {
+          handle2.consume(h => vm.setProp(h, marshal(key), marshal(v)));
+        } else {
+          vm.setProp(handle2, marshal(key), marshal(v));
+        }
+      }
+
+      return true;
+    },
+
+    deleteProperty(obj, key) {
+      var _syncMode2;
+
+      const sync = (_syncMode2 = syncMode == null ? void 0 : syncMode(rec)) != null ? _syncMode2 : "host";
+      const [handle2, unwrapped] = unwrapHandle(vm, marshal(rec), proxyKeySymbolHandle);
+
+      if (sync === "vm" || Reflect.deleteProperty(obj, key)) {
+        if (sync === "host") return true;
+
+        if (unwrapped) {
+          handle2.consume(h => call(vm, `(a, b) => delete a[b]`, undefined, h, marshal(key)));
+        } else {
+          call(vm, `(a, b) => delete a[b]`, undefined, handle2, marshal(key));
+        }
+      }
+
+      return true;
+    }
+
+  });
+  return rec;
+}
+function wrapHandle(vm, handle, proxyKeySymbol, proxyKeySymbolHandle, unmarshal, syncMode) {
+  if (!isHandleObject(vm, handle)) return [undefined, false];
+  if (isHandleWrapped(vm, handle, proxyKeySymbolHandle)) return [handle, false];
+  return consumeAll([vm.newFunction("getSyncMode", h => {
+    const res = syncMode == null ? void 0 : syncMode(unmarshal(h));
+    if (typeof res === "string") return vm.newString(res);
+    return vm.undefined;
+  }), vm.newFunction("setter", (h, keyHandle, valueHandle) => {
+    const target = unmarshal(h);
+    if (!target) return;
+    const key = unmarshal(keyHandle);
+    if (key === "__proto__") return; // for security
+
+    const value = unmarshal(valueHandle);
+    unwrap(target, proxyKeySymbol)[key] = value;
+  }), vm.newFunction("deleter", (h, keyHandle) => {
+    const target = unmarshal(h);
+    if (!target) return;
+    const key = unmarshal(keyHandle);
+    delete unwrap(target, proxyKeySymbol)[key];
+  })], args => [call(vm, `(target, sym, getSyncMode, setter, deleter) => {
+          const rec =  new Proxy(target, {
+            get(obj, key, receiver) {
+              return key === sym ? obj : Reflect.get(obj, key, receiver)
+            },
+            set(obj, key, value, receiver) {
+              const v = typeof value === "object" && value !== null || typeof value === "function"
+                ? value[sym] ?? value
+                : value;
+              const sync = getSyncMode(receiver) ?? "vm";
+              if (sync === "host" || Reflect.set(obj, key, v, receiver)) {
+                if (sync !== "vm") {
+                  setter(receiver, key, v);
+                }
+              }
+              return true;
+            },
+            deleteProperty(obj, key) {
+              const sync = getSyncMode(rec) ?? "vm";
+              if (sync === "host" || Reflect.deleteProperty(obj, key)) {
+                if (sync !== "vm") {
+                  deleter(rec, key);
+                }
+              }
+              return true;
+            },
+          });
+          return rec;
+        }`, undefined, handle, proxyKeySymbolHandle, ...args), true]);
+}
+function unwrap(obj, key) {
+  var _obj$key;
+
+  return isObject(obj) ? (_obj$key = obj[key]) != null ? _obj$key : obj : obj;
+}
+function unwrapHandle(vm, handle, key) {
+  if (!isHandleWrapped(vm, handle, key)) return [handle, false];
+  return [vm.getProp(handle, key), true];
+}
+function isWrapped(obj, key) {
+  return isObject(obj) && !!obj[key];
+}
+function isHandleWrapped(vm, handle, key) {
+  return !!vm.dump(call(vm, `(a, s) => (typeof a === "object" && a !== null || typeof a === "function") && !!a[s]`, undefined, handle, key));
+}
+
+/**
+ * Default value of registeredObjects option of the Arena class constructor.
+ */
+const defaultRegisteredObjects = [// basic objects
+[Symbol, "Symbol"], [Symbol.prototype, "Symbol.prototype"], [Object, "Object"], [Object.prototype, "Object.prototype"], [Function, "Function"], [Function.prototype, "Function.prototype"], [Boolean, "Boolean"], [Boolean.prototype, "Boolean.prototype"], [Array, "Array"], [Array.prototype, "Array.prototype"], // [BigInt, "BigInt"],
+// [BigInt.prototype, "BigInt.prototype"],
+// errors
+[Error, "Error"], [Error.prototype, "Error.prototype"], [EvalError, "EvalError"], [EvalError.prototype, "EvalError.prototype"], [RangeError, "RangeError"], [RangeError.prototype, "RangeError.prototype"], [ReferenceError, "ReferenceError"], [ReferenceError.prototype, "ReferenceError.prototype"], [SyntaxError, "SyntaxError"], [SyntaxError.prototype, "SyntaxError.prototype"], [TypeError, "TypeError"], [TypeError.prototype, "TypeError.prototype"], [URIError, "URIError"], [URIError.prototype, "URIError.prototype"], // built-in symbols
+...Object.getOwnPropertyNames(Symbol).filter(k => typeof Symbol[k] === "symbol").map(k => [Symbol[k], `Symbol.${k}`])];
+
+/**
+ * The Arena class manages all generated handles at once by quickjs-emscripten and automatically converts objects between the host and the QuickJS VM.
+ */
+
+class Arena {
+  /** Constructs a new Arena instance. It requires a quickjs-emscripten VM initialized with `quickjs.createVM()`. */
+  constructor(vm, options) {
+    var _options$registeredOb;
+
+    this.vm = void 0;
+    this._map = void 0;
+    this._registeredMap = void 0;
+    this._registeredMapDispose = new Set();
+    this._sync = new Set();
+    this._temporalSync = new Set();
+    this._symbol = Symbol();
+    this._symbolHandle = void 0;
+    this._options = void 0;
+    this.vm = vm;
+    this._options = options;
+    this._symbolHandle = vm.unwrapResult(vm.evalCode(`Symbol()`));
+    this._map = new VMMap(vm);
+    this._registeredMap = new VMMap(vm);
+    this.registerAll((_options$registeredOb = options == null ? void 0 : options.registeredObjects) != null ? _options$registeredOb : defaultRegisteredObjects);
+  }
+  /**
+   * Dispose of the arena and managed handles. This method won't dispose the VM itself, so the VM has to be disposed of manually.
+   */
+
+
+  dispose() {
+    this._map.dispose();
+
+    this._registeredMap.dispose();
+
+    this._symbolHandle.dispose();
+  }
+  /**
+   * Evaluate JS code in the VM and get the result as an object on the host side. It also converts and re-throws error objects when an error is thrown during evaluation.
+   */
+
+
+  evalCode(code) {
+    const handle = this.vm.evalCode(code);
+    return this._unwrapResultAndUnmarshal(handle);
+  }
+  /**
+   * Almost same as `vm.executePendingJobs()`, but it converts and re-throws error objects when an error is thrown during evaluation.
+   */
+
+
+  executePendingJobs(maxJobsToExecute) {
+    const result = this.vm.executePendingJobs(maxJobsToExecute);
+
+    if ("value" in result) {
+      return result.value;
+    }
+
+    throw result.error.consume(err => this._unmarshal(err));
+  }
+  /**
+   * Expose objects as global objects in the VM.
+   *
+   * By default, exposed objects are not synchronized between the host and the VM.
+   * If you want to sync an objects, first wrap the object with sync method, and then expose the wrapped object.
+   */
+
+
+  expose(obj) {
+    for (const [key, value] of Object.entries(obj)) {
+      const handle = this._marshal(value);
+
+      this.vm.setProp(this.vm.global, key, handle);
+    }
+  }
+  /**
+   * Enables sync for the object between the host and the VM and returns objects wrapped with proxies.
+   *
+   * The return value is necessary in order to reflect changes to the object from the host to the VM. Please note that setting a value in the field or deleting a field in the original object will not synchronize it.
+   */
+
+
+  sync(target) {
+    const wrapped = this._wrap(target);
+
+    if (typeof wrapped === "undefined") return target;
+    walkObject(wrapped, v => {
+      this._sync.add(this._unwrap(v));
+    });
+    return wrapped;
+  }
+  /**
+   * Register a pair of objects that will be considered the same between the host and the QuickJS VM.
+   *
+   * Instead of a string, you can also pass a QuickJSHandle directly. In that case, however, when  you have to dispose them manually when destroying the VM.
+   */
+
+
+  register(target, handleOrCode) {
+    if (this._registeredMap.has(target)) return;
+    const handle = typeof handleOrCode === "string" ? this._unwrapResult(this.vm.evalCode(handleOrCode)) : handleOrCode;
+    if (eq(this.vm, handle, this.vm.undefined)) return;
+
+    if (typeof handleOrCode === "string") {
+      this._registeredMapDispose.add(target);
+    }
+
+    this._registeredMap.set(target, handle);
+  }
+  /**
+   * Execute `register` methods for each pair.
+   */
+
+
+  registerAll(map) {
+    for (const [k, v] of map) {
+      this.register(k, v);
+    }
+  }
+  /**
+   * Unregister a pair of objects that were registered with `registeredObjects` option and `register` method.
+   */
+
+
+  unregister(target, dispose) {
+    this._registeredMap.delete(target, this._registeredMapDispose.has(target) || dispose);
+
+    this._registeredMapDispose.delete(target);
+  }
+  /**
+   * Execute `unregister` methods for each target.
+   */
+
+
+  unregisterAll(targets, dispose) {
+    for (const t of targets) {
+      this.unregister(t, dispose);
+    }
+  }
+
+  startSync(target) {
+    if (!isObject(target)) return;
+
+    this._sync.add(this._unwrap(target));
+  }
+
+  endSync(target) {
+    this._sync.delete(this._unwrap(target));
+  }
+
+  _unwrapResult(result) {
+    if ("value" in result) {
+      return result.value;
+    }
+
+    throw result.error.consume(err => this._unmarshal(err));
+  }
+
+  _unwrapResultAndUnmarshal(result) {
+    if (!result) return;
+    return this._unwrapResult(result).consume(h => this._unmarshal(h));
+  }
+
+  _marshal(target) {
+    var _this$_wrap;
+
+    const registered = this._registeredMap.get(target);
+
+    if (registered) {
+      return registered;
+    }
+
+    const handle = marshal((_this$_wrap = this._wrap(target)) != null ? _this$_wrap : target, {
+      vm: this.vm,
+      unmarshal: h => this._unmarshal(h),
+      isMarshalable: t => {
+        var _this$_options$isMars, _this$_options;
+
+        return (_this$_options$isMars = (_this$_options = this._options) == null ? void 0 : _this$_options.isMarshalable == null ? void 0 : _this$_options.isMarshalable(this._unwrap(t))) != null ? _this$_options$isMars : true;
+      },
+      find: t => {
+        var _this$_registeredMap$;
+
+        return (_this$_registeredMap$ = this._registeredMap.get(t)) != null ? _this$_registeredMap$ : this._map.get(t);
+      },
+      pre: (t, h) => {
+        var _this$_register;
+
+        return (_this$_register = this._register(t, h, this._map)) == null ? void 0 : _this$_register[1];
+      },
+      preApply: (target, that, args) => {
+        const unwrapped = isObject(that) ? this._unwrap(that) : undefined; // override sync mode of this object while calling the function
+
+        if (unwrapped) this._temporalSync.add(unwrapped);
+
+        try {
+          return target.apply(that, args);
+        } finally {
+          // restore sync mode
+          if (unwrapped) this._temporalSync.delete(unwrapped);
+        }
+      }
+    });
+    return handle;
+  }
+
+  _unmarshal(handle) {
+    const registered = this._registeredMap.getByHandle(handle);
+
+    if (typeof registered !== "undefined") {
+      return registered;
+    }
+
+    const [wrappedHandle] = this._wrapHandle(handle);
+
+    return unmarshal(wrappedHandle != null ? wrappedHandle : handle, {
+      vm: this.vm,
+      marshal: v => this._marshal(v),
+      find: h => {
+        var _this$_registeredMap$2;
+
+        return (_this$_registeredMap$2 = this._registeredMap.getByHandle(h)) != null ? _this$_registeredMap$2 : this._map.getByHandle(h);
+      },
+      pre: (t, h) => {
+        var _this$_register2;
+
+        return (_this$_register2 = this._register(t, h, undefined, true)) == null ? void 0 : _this$_register2[0];
+      }
+    });
+  }
+
+  _register(t, h, map = this._map, sync) {
+    if (this._registeredMap.has(t) || this._registeredMap.hasHandle(h)) {
+      return;
+    }
+
+    const wrappedT = this._wrap(t);
+
+    const [wrappedH] = this._wrapHandle(h);
+
+    if (!wrappedT || !wrappedH) return; // t or h is not an object
+
+    const unwrappedT = this._unwrap(t);
+
+    const [unwrappedH, unwrapped] = this._unwrapHandle(h);
+
+    const res = map.set(wrappedT, wrappedH, unwrappedT, unwrappedH);
+
+    if (!res) {
+      // already registered
+      if (unwrapped) unwrappedH.dispose();
+      throw new Error("already registered");
+    } else if (sync) {
+      this._sync.add(unwrappedT);
+    }
+
+    return [wrappedT, wrappedH];
+  }
+
+  _syncMode(obj) {
+    const obj2 = this._unwrap(obj);
+
+    return this._sync.has(obj2) || this._temporalSync.has(obj2) ? "both" : undefined;
+  }
+
+  _wrap(target) {
+    return wrap(this.vm, target, this._symbol, this._symbolHandle, t => this._marshal(t), t => this._syncMode(t));
+  }
+
+  _unwrap(target) {
+    return unwrap(target, this._symbol);
+  }
+
+  _wrapHandle(handle) {
+    return wrapHandle(this.vm, handle, this._symbol, this._symbolHandle, h => this._unmarshal(h), t => this._syncMode(t));
+  }
+
+  _unwrapHandle(target) {
+    return unwrapHandle(this.vm, target, this._symbolHandle);
+  }
+
+}
+
+export { Arena, VMMap, call, complexity, consumeAll, defaultRegisteredObjects, eq, isES2015Class, isHandleObject, isObject, marshal, send, unmarshal, walkObject };
 //# sourceMappingURL=quickjs-emscripten-sync.modern.js.map
